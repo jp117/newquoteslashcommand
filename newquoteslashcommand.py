@@ -1,9 +1,20 @@
 import os
 import credentials
+#import locale #don't think this is needed
+import json
+import datetime 
 
 from flask import abort, Flask, jsonify, request
 
 app = Flask(__name__)
+
+#func get the month and the year
+
+#func check for a file month + year .txt, if one doesn't exist, make one
+
+#func write json data 
+
+# func dump json data to correct file
 
 def is_request_valid(request):
     is_token_valid = request.form['token'].strip()  == credentials.newquote_token
@@ -22,7 +33,7 @@ def newquote():
     if "::" in request.form['text'] and datasplitter()[1].strip().isdigit():
         return jsonify(
             response_type='in_channel',
-            text='job name/address is ' + datasplitter()[0] + ', quote was for ' + datasplitter()[1] + ' dollars')
+            text='job name/address is "' + datasplitter()[0] + '", quote was for $' + '{:,}'.format(int(datasplitter()[1])) + ' dollars')
     else:
         return jsonify(
             response_type='in_channel',
