@@ -6,4 +6,5 @@ When typing /newquote, you can input the job name and address as well as the dol
 ### To-Do-List
 -Add date for JSON file storage for day quote was entered  
 -Refactor   
+-Make sure to comment code  
 -Deploy  
