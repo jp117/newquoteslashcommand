@@ -1,6 +1,6 @@
 import os
+from os import path
 import credentials
-#import locale #don't think this is needed
 import json
 import datetime 
 
@@ -8,13 +8,28 @@ from flask import abort, Flask, jsonify, request
 
 app = Flask(__name__)
 
-#func get the month and the year
+#gets the year 
+def year():
+    mny = datetime.datetime.now()
+    return mny.strftime("%Y")
 
-#func check for a file month + year .txt, if one doesn't exist, make one
+
+def data_file():
+    filename = str(year())
+    with open(filename+'_quotedata.json', 'a+') as outfile:
+        json.dump(quote_data(), outfile)
 
 #func write json data 
-
-# func dump json data to correct file
+def quote_data():
+    data = {}
+    data['quote'] = []
+    data['quote'].append(
+        {
+        'salesman':request.form['user_name'],
+        'job name': datasplitter()[0],
+        'amount': '{:,}'.format(int(datasplitter()[1]))
+        })
+    return data
 
 def is_request_valid(request):
     is_token_valid = request.form['token'].strip()  == credentials.newquote_token
@@ -31,10 +46,11 @@ def newquote():
         abort(400)
     #check if text entered is in the proper format with a ::
     if "::" in request.form['text'] and datasplitter()[1].strip().isdigit():
+        data_file()
         return jsonify(
             response_type='in_channel',
-            text='job name/address is "' + datasplitter()[0] + '", quote was for $' + '{:,}'.format(int(datasplitter()[1])) + ' dollars')
+            text=request.form['user_name'] + ' quoted ' + datasplitter()[0] + '", for $' + '{:,}'.format(int(datasplitter()[1])) + ' dollars')
     else:
         return jsonify(
             response_type='in_channel',
-            text='you did not input in the quote in the proper format')
+            text='You did not input the quote in the correct format.  Make sure you type the name and/or address followed by \"::\" with the dollar amount in digits only')
