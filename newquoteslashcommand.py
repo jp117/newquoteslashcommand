@@ -47,7 +47,7 @@ def newquote():
         data_file()
         return jsonify(
             response_type='in_channel',
-            text=request.form['user_name'] + ' quoted ' + datasplitter()[0] + '", for $ ' + '{:,}'.format(int(datasplitter()[1])) + ' dollars')
+            text=request.form['user_name'] + ' quoted ' + datasplitter()[0] + ', for $ ' + '{:,}'.format(int(datasplitter()[1])) + ' dollars')
     #Give error message because data was wrong    
     else:
         return jsonify(
