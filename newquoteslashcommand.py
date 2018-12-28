@@ -8,21 +8,31 @@ app = Flask(__name__)
 
 #Checks if the datafile exists, if it does not, creates it.  Dumps the data into the file
 def data_file():
-    with open(str(datetime.datetime.today().year)+'_quotedata.json', 'a+') as outfile:
-        json.dump(quote_data(), outfile, indent=4)
-        #indent=4 pretifies json code to make it more readable
+    name = str(datetime.datetime.today().year)+'_quotedata.json'
+    if os.path.isfile(name):
+        data = overwrite()
+        with open(name, 'w+') as outfile:
+            json.dump(data, outfile, indent=4)
+    else:
+        with open(name, 'a+') as outfile:
+            data = {"quote":[]}
+            data['quote'].append(quote_data())
+            json.dump(data, outfile, indent=4)
+            #indent=4 pretifies json code to make it more readable
+
+def overwrite():
+    with open(str(datetime.datetime.today().year)+'_quotedata.json', 'r+') as outfile:
+        data=json.load(outfile)
+        data['quote'].append(quote_data())
+        outfile.close()
+        return data
 
 #Writes JSON data to be dumped into the data_file
 def quote_data():
-    data = {}
-    data['quote'] = []
-    data['quote'].append(
-        {
-        'date': str(datetime.datetime.today().strftime("%m/%d/%Y")),
+    data={'date': str(datetime.datetime.today().strftime("%m/%d/%Y")),
         'salesman':request.form['user_name'],
         'job name': datasplitter()[0],
-        'amount': '{:,}'.format(int(datasplitter()[1]))
-        })
+        'amount': '{:,}'.format(int(datasplitter()[1]))}
     return data
 
 #Checks that my credentials are correct for my slack channel
